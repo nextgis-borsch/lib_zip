@@ -170,8 +170,7 @@ else()
     #set_target_properties(${LIB_NAME} PROPERTIES DEFINE_SYMBOL JBIG_STATIC)
 endif()
 
-message(STATUS "=== lib === ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
-target_link_libraries(${LIB_NAME} ${ZLIB_LIBRARY})
+target_link_extlibraries(${LIB_NAME})
 
 export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
