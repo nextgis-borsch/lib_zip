@@ -8,7 +8,7 @@ ENDIF(NOT HAVE_GETOPT)
 
 ADD_EXECUTABLE(zipcmp zipcmp.c ${SRC_EXTRA_FILES})
 #TARGET_LINK_LIBRARIES(zipcmp zip)
-target_link_libraries(zipcmp ${ZLIB_LIBRARY})
+target_link_libraries(zipcmp ${LIB_NAME})
 #INSTALL(TARGETS zipcmp RUNTIME DESTINATION bin)
 INSTALL(TARGETS zipcmp RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
