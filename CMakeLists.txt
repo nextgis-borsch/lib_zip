@@ -94,10 +94,9 @@ CHECK_TYPE_SIZE("off_t" SIZEOF_OFF_T)
 CHECK_TYPE_SIZE("size_t" SIZE_T_LIBZIP)
 CHECK_TYPE_SIZE("ssize_t" SSIZE_T_LIBZIP)
 
-include(FindAnyProject)
-
-set(WITH_ZLIB_EXTERNAL ON CACHE BOOL "zlib on" FORCE)
-find_anyproject(ZLIB REQUIRED SHARED OFF)
+FIND_PACKAGE(ZLIB REQUIRED)
+#include(FindAnyProject)
+#find_anyproject(ZLIB REQUIRED SHARED OFF VERSION "1.1.2")
 
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 set(CMAKE_REQUIRED_INCLUDES ${ZLIB_INCLUDE_DIR})
@@ -109,7 +108,16 @@ IF(MSVC)
 ADD_DEFINITIONS("-D_CRT_SECURE_NO_WARNINGS")
 ENDIF(MSVC)
 
+
 # Targets
+
+# we do it here in order to reach library name in /src subdirectory
+if(BUILD_SHARED_LIBS)
+    set(LIB_NAME ${PROJECT_NAME})
+else()
+    set(LIB_NAME ${PROJECT_NAME}static)
+endif()
+
 #add_subdirectory (${CMAKE_SOURCE_DIR}/lib ${CMAKE_BINARY_DIR}/lib)
 ADD_SUBDIRECTORY(lib)
 #ADD_SUBDIRECTORY(man)
