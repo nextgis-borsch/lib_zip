@@ -1,18 +1,17 @@
 INCLUDE(CheckFunctionExists)
 
-#INSTALL(FILES zip.h DESTINATION include)
-INSTALL(FILES zip.h DESTINATION "${INSTALL_INC_DIR}")
+INSTALL(FILES zip.h DESTINATION include)
 
 # from http://www.cmake.org/Wiki/CMakeMacroLibtoolFile
 MACRO(GET_TARGET_PROPERTY_WITH_DEFAULT _variable _target _property _default_value)
-
+  
   GET_TARGET_PROPERTY (${_variable} ${_target} ${_property})
   IF (${_variable} STREQUAL NOTFOUND)
     SET (${_variable} ${_default_value})
   ENDIF (${_variable} STREQUAL NOTFOUND)
-
+  
 ENDMACRO (GET_TARGET_PROPERTY_WITH_DEFAULT)
-
+  
 MACRO(CREATE_LIBTOOL_FILE _target _install_DIR)
   GET_TARGET_PROPERTY(_target_location ${_target} LOCATION)
   GET_TARGET_PROPERTY_WITH_DEFAULT(_target_static_lib ${_target} STATIC_LIB "")
@@ -52,7 +51,7 @@ MACRO(CREATE_LIBTOOL_FILE _target _install_DIR)
   INSTALL( FILES ${_laname} ${_soname}
     DESTINATION ${CMAKE_INSTALL_PREFIX}${_install_DIR})
 ENDMACRO(CREATE_LIBTOOL_FILE)
-
+ 
 SET(LIBZIP_SOURCES
   zip_add.c
   zip_add_dir.c
@@ -157,45 +156,10 @@ IF(NOT HAVE_MKSTEMP)
   SET(LIBZIP_EXTRA_FILES mkstemp.c)
 ENDIF(NOT HAVE_MKSTEMP)
 
-if(BUILD_SHARED_LIBS)
-    set(LIB_NAME ${PROJECT_NAME})
-    add_library(${LIB_NAME} SHARED ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES})
-    set_target_properties(${LIB_NAME} PROPERTIES SOVERSION 3)
-    set_target_properties(${LIB_NAME} PROPERTIES DEFINE_SYMBOL JBIG_DLL_EXPORTS)
-else()
-    add_definitions(-DJBIG_STATIC)
-    set(LIB_NAME ${PROJECT_NAME}static)
-    add_library(${LIB_NAME} STATIC ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES})
-    set_target_properties(${LIB_NAME} PROPERTIES SOVERSION 3)
-    #set_target_properties(${LIB_NAME} PROPERTIES DEFINE_SYMBOL JBIG_STATIC)
-endif()
-
-export(TARGETS ${LIB_NAME} FILE ${LIB_NAME}-exports.cmake)
-add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-
-if(NOT CYGWIN)
-#    set_target_properties(${LIB_NAME} PROPERTIES VERSION ${VERSION})
-    set_target_properties(${LIB_NAME} PROPERTIES VERSION 3.0)
-endif()
-
-if(UNIX)
-    # On unix-like platforms the library is almost always called lib${PROJECT_NAME}
-    set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-endif()
-
-if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
-    install(TARGETS ${LIB_NAME}
-        RUNTIME DESTINATION "${INSTALL_BIN_DIR}"
-        ARCHIVE DESTINATION "${INSTALL_LIB_DIR}"
-        LIBRARY DESTINATION "${INSTALL_LIB_DIR}" )
-endif()
-
-
-
-#ADD_LIBRARY(zip SHARED ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES})
-#SET_TARGET_PROPERTIES(zip PROPERTIES VERSION 3.0 SOVERSION 3 )
-#TARGET_LINK_LIBRARIES(zip ${ZLIB_LIBRARY})
-#INSTALL(TARGETS zip
-#	ARCHIVE DESTINATION lib
-#	LIBRARY DESTINATION lib)
-##CREATE_LIBTOOL_FILE(zip lib)
+ADD_LIBRARY(zip SHARED ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES})
+SET_TARGET_PROPERTIES(zip PROPERTIES VERSION 3.0 SOVERSION 3 )
+TARGET_LINK_LIBRARIES(zip ${ZLIB_LIBRARY})
+INSTALL(TARGETS zip
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib)
+#CREATE_LIBTOOL_FILE(zip lib)
