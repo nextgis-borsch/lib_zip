@@ -20,6 +20,7 @@ set(INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Installation directo
 set(INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR} CACHE INTERNAL "Installation directory for libraries" FORCE)
 set(INSTALL_INC_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE INTERNAL "Installation directory for headers" FORCE)
 set(INSTALL_DOC_DIR ${CMAKE_INSTALL_DOCDIR} CACHE INTERNAL "Share directory for data" FORCE)
+set(INSTALL_MAN_DIR ${CMAKE_INSTALL_MANDIR} CACHE INTERNAL "Share directory for mans" FORCE)
 
 INCLUDE(CheckFunctionExists)
 INCLUDE(CheckIncludeFiles)
@@ -115,9 +116,9 @@ else()
 endif()
 
 ADD_SUBDIRECTORY(lib)
-#ADD_SUBDIRECTORY(man)
+ADD_SUBDIRECTORY(man)
 ADD_SUBDIRECTORY(src)
-#ADD_SUBDIRECTORY(regress)
+ADD_SUBDIRECTORY(regress)
 
 
 # TODO: pkgconfig file
