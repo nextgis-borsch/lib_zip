@@ -20,6 +20,30 @@
 # along with this script.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+function(check_version major minor rev)
+
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt VERSION_H_CONTENTS)
+
+    string(REGEX MATCH "PACKAGE_VERSION_MAJOR[ \t]+([0-9]+)"
+      MAJOR_VERSION ${VERSION_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+      MAJOR_VERSION ${MAJOR_VERSION})
+    string(REGEX MATCH "PACKAGE_VERSION_MINOR[ \t]+([0-9]+)"
+      MINOR_VERSION ${VERSION_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+      MINOR_VERSION ${MINOR_VERSION})
+    string(REGEX MATCH "PACKAGE_VERSION_PATCH[ \t]+([0-9]+)"
+      REV_VERSION ${VERSION_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+      REV_VERSION ${REV_VERSION})
+
+    set(${major} ${MAJOR_VERSION} PARENT_SCOPE)
+    set(${minor} ${MINOR_VERSION} PARENT_SCOPE)
+    set(${rev} ${REV_VERSION} PARENT_SCOPE)
+
+endfunction(check_version)
+
+
 function(report_version name ver)
 
     string(ASCII 27 Esc)

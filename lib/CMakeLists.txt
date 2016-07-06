@@ -169,6 +169,7 @@ else()
     #set_target_properties(${LIB_NAME} PROPERTIES DEFINE_SYMBOL JBIG_STATIC)
 endif()
 
+target_include_directories(${LIB_NAME} PUBLIC "${INSTALL_INC_FULL_DIR}")
 target_link_extlibraries(${LIB_NAME})
 
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
@@ -180,7 +181,8 @@ endif()
 
 if(UNIX)
     # On unix-like platforms the library is almost always called lib${PROJECT_NAME}
-    set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+#    set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+    set_target_properties(${LIB_NAME} PROPERTIES OUTPUT_NAME zip)
 endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
