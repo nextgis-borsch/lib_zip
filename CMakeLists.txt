@@ -110,11 +110,7 @@ ENDIF(MSVC)
 # Targets
 
 # we do it here in order to reach library name in /src subdirectory
-if(BUILD_SHARED_LIBS)
-    set(LIB_NAME ${PROJECT_NAME})
-else()
-    set(LIB_NAME ${PROJECT_NAME}static)
-endif()
+set(LIB_NAME ${PROJECT_NAME})
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(man)
