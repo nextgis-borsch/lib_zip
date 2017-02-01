@@ -46,6 +46,10 @@ include(util)
 #set(VERSION ${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH})
 report_version(${PROJECT_NAME} ${VERSION})
 
+# Store version string in file for installer needs
+file(TIMESTAMP ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt VERSION_DATETIME "%Y-%m-%d %H:%M:%S" UTC)
+file(WRITE ${CMAKE_BINARY_DIR}/version.str "${VERSION}\n${VERSION_DATETIME}")
+
 
 # Checks
 
