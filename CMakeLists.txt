@@ -299,7 +299,7 @@ SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Targets
 ADD_SUBDIRECTORY(lib)
 
-get_target_property(LIBS_PRIVATE zip LINK_LIBRARIES)
+get_target_property(LIBS_PRIVATE ${LIB_NAME} LINK_LIBRARIES)
 foreach(LIB ${LIBS_PRIVATE})
   if(LIB MATCHES "^/")
     get_filename_component(LIB ${LIB} NAME_WE)
