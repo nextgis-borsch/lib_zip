@@ -32,8 +32,10 @@
 *.dSYM/
 
 # Build
-/build
+/build*
 /inst
 
-# Tmp
+# Temp
 *~
+*.txt.user
+.vscode
