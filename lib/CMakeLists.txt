@@ -114,14 +114,31 @@ SET(LIBZIP_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/zip_err_str.c
 )
 
-ADD_LIBRARY(${LIB_NAME} ${LIBZIP_SOURCES})
+set(INST_HEADER ${PROJECT_BINARY_DIR}/zipconf.h ${CMAKE_CURRENT_SOURCE_DIR}/zip.h)
 
-if(WIN32)
-  target_sources(${LIB_NAME} PRIVATE
-    zip_source_file_win32.c
-    zip_source_file_win32_named.c
-    zip_source_file_win32_utf16.c
-    zip_source_file_win32_utf8.c
+if(OSX_FRAMEWORK)
+    ADD_LIBRARY(${LIB_NAME} SHARED ${LIBZIP_SOURCES} ${INST_HEADER})
+    target_sources(${LIB_NAME} PRIVATE
+        zip_mkstempm.c
+        zip_source_file_stdio_named.c
+        zip_random_unix.c
+    )
+    set_target_properties(${LIB_NAME} PROPERTIES
+      FRAMEWORK TRUE
+      FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
+      MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
+      MACOSX_FRAMEWORK_BUNDLE_VERSION ${VERSION}
+      MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.libgdal
+      XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+      PUBLIC_HEADER "${INST_HEADER}"
+    )
+elseif(WIN32)
+    ADD_LIBRARY(${LIB_NAME} SHARED ${LIBZIP_SOURCES})
+    target_sources(${LIB_NAME} PRIVATE
+        zip_source_file_win32.c
+        zip_source_file_win32_named.c
+        zip_source_file_win32_utf16.c
+        zip_source_file_win32_utf8.c
     )
   if(CMAKE_SYSTEM_NAME MATCHES WindowsPhone OR CMAKE_SYSTEM_NAME MATCHES WindowsStore)
     target_sources(${LIB_NAME} PRIVATE zip_random_uwp.c)
@@ -129,22 +146,23 @@ if(WIN32)
     target_sources(${LIB_NAME} PRIVATE zip_source_file_win32_ansi.c zip_random_win32.c)
     target_link_libraries(${LIB_NAME} PRIVATE advapi32)
   endif()
-else(WIN32)
-  target_sources(${LIB_NAME} PRIVATE
-    zip_mkstempm.c
-    zip_source_file_stdio_named.c
-    zip_random_unix.c
+else()
+    ADD_LIBRARY(${LIB_NAME} STATIC ${LIBZIP_SOURCES})
+    target_sources(${LIB_NAME} PRIVATE
+        zip_mkstempm.c
+        zip_source_file_stdio_named.c
+        zip_random_unix.c
     )
-endif(WIN32)
+endif()
 
 if(HAVE_LIBBZ2)
   target_sources(${LIB_NAME} PRIVATE zip_algorithm_bzip2.c)
-  target_link_libraries(${LIB_NAME} PRIVATE BZip2::BZip2)
+  target_link_libraries(${LIB_NAME} PRIVATE ${BZIP2_LIBRARIES}) # BZip2::BZip2)
 endif()
 
 if(HAVE_LIBLZMA)
   target_sources(${LIB_NAME} PRIVATE zip_algorithm_xz.c)
-  target_link_libraries(${LIB_NAME} PRIVATE LibLZMA::LibLZMA)
+  target_link_libraries(${LIB_NAME} PRIVATE ${LIBLZMA_LIBRARIES}) # LibLZMA::LibLZMA)
 endif()
 
 if(HAVE_LIBZSTD)
@@ -162,7 +180,7 @@ elseif(HAVE_GNUTLS)
   target_link_libraries(${LIB_NAME} PRIVATE GnuTLS::GnuTLS Nettle::Nettle)
 elseif(HAVE_OPENSSL)
   target_sources(${LIB_NAME} PRIVATE zip_crypto_openssl.c)
-  target_link_libraries(${LIB_NAME} PRIVATE OpenSSL::Crypto)
+  target_link_libraries(${LIB_NAME} PRIVATE ${OPENSSL_LIBRARIES})# OpenSSL::Crypto)
 elseif(HAVE_MBEDTLS)
   target_sources(${LIB_NAME} PRIVATE zip_crypto_mbedtls.c)
   target_link_libraries(${LIB_NAME} PRIVATE MbedTLS::MbedTLS)
@@ -243,3 +261,19 @@ string(APPEND zip_err_str [=[}\;
 const int _zip_err_details_count = sizeof(_zip_err_details)/sizeof(_zip_err_details[0])\;
 ]=])
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/zip_err_str.c ${zip_err_str})
+
+
+if(NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
+    install(FILES ${PROJECT_BINARY_DIR}/zipconf.h ${CMAKE_CURRENT_SOURCE_DIR}/zip.h DESTINATION ${INSTALL_INC_DIR} COMPONENT headers)
+endif()
+
+if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
+    # Install the <Package>Config.cmake
+    install(FILES
+        ${PROJECT_BINARY_DIR}/${PACKAGE_UPPER_NAME}Config.cmake
+        DESTINATION ${INSTALL_CMAKECONF_DIR} COMPONENT dev
+    )
+
+    # Install the export set for use with the install-tree
+    install(EXPORT ${PACKAGE_UPPER_NAME}Targets DESTINATION ${INSTALL_CMAKECONF_DIR} COMPONENT dev)
+endif()
